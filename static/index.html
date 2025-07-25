@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Pengaduan Lingkungan</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/ol@10.6.1/ol.css">
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-leaf"></i>
+                    <h1>EcoReport</h1>
+                </div>
+                <nav class="nav">
+                    <button class="nav-btn active" data-tab="form">
+                        <i class="fas fa-plus-circle"></i>
+                        Buat Laporan
+                    </button>
+                    <button class="nav-btn" data-tab="dashboard">
+                        <i class="fas fa-chart-bar"></i>
+                        Dashboard
+                    </button>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="container">
+            <!-- Form Tab -->
+            <div id="form-tab" class="tab-content active">
+                <div class="form-section">
+                    <div class="form-header">
+                        <h2>Laporkan Masalah Lingkungan</h2>
+                        <p>Bantu kami menjaga lingkungan dengan melaporkan masalah yang Anda temukan</p>
+                    </div>
+                    
+                    <form id="report-form" class="report-form">
+                        <div class="form-group">
+                            <label for="description">
+                                <i class="fas fa-edit"></i>
+                                Deskripsi Masalah
+                            </label>
+                            <textarea 
+                                id="description" 
+                                name="description" 
+                                placeholder="Jelaskan masalah lingkungan yang Anda temukan..."
+                                required
+                            ></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="province">
+                                <i class="fas fa-map-marker-alt"></i>
+                                Provinsi
+                            </label>
+                            <select id="province" name="province" required>
+                                <option value="">Pilih Provinsi</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="photo">
+                                <i class="fas fa-camera"></i>
+                                Foto Bukti (Opsional)
+                            </label>
+                            <div class="file-upload">
+                                <input type="file" id="photo" name="photo" accept="image/*">
+                                <div class="file-upload-content">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <span>Klik untuk upload foto atau drag & drop</span>
+                                </div>
+                                <div class="file-preview" id="file-preview"></div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>
+                                <i class="fas fa-location-arrow"></i>
+                                Lokasi
+                            </label>
+                            <button type="button" id="get-location" class="location-btn">
+                                <i class="fas fa-crosshairs"></i>
+                                Dapatkan Lokasi Saat Ini
+                            </button>
+                            <div id="location-info" class="location-info"></div>
+                        </div>
+
+                        <button type="submit" class="submit-btn">
+                            <i class="fas fa-paper-plane"></i>
+                            Kirim Laporan
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Dashboard Tab -->
+            <div id="dashboard-tab" class="tab-content">
+                <div class="dashboard-section">
+                    <div class="dashboard-header">
+                        <h2>Dashboard Laporan Lingkungan</h2>
+                        <p>Peta interaktif menampilkan laporan masalah lingkungan per provinsi</p>
+                    </div>
+                    
+                    <div class="legend">
+                        <h3>Legenda:</h3>
+                        <div class="legend-items">
+                            <div class="legend-item">
+                                <div class="legend-color high"></div>
+                                <span>Banyak Laporan (>10)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color medium"></div>
+                                <span>Laporan Sedang (5-10)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color low"></div>
+                                <span>Sedikit Laporan (1-4)</span>
+                            </div>
+                            <div class="legend-item">
+                                <div class="legend-color none"></div>
+                                <span>Tidak Ada Laporan</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="map" class="map-container"></div>
+                    
+                    <div class="stats-container">
+                        <div class="stat-card">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <div class="stat-content">
+                                <h3 id="total-reports">0</h3>
+                                <p>Total Laporan</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-clock"></i>
+                            <div class="stat-content">
+                                <h3 id="pending-reports">0</h3>
+                                <p>Menunggu</p>
+                            </div>
+                        </div>
+                        <div class="stat-card">
+                            <i class="fas fa-check-circle"></i>
+                            <div class="stat-content">
+                                <h3 id="resolved-reports">0</h3>
+                                <p>Selesai</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="report-feed" class="report-feed">
+                     <!-- Daftar laporan akan dimasukkan di sini oleh JavaScript -->
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Loading Overlay -->
+    <div id="loading" class="loading">
+        <div class="loading-spinner"></div>
+        <p>Memproses...</p>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="success-modal" class="modal">
+        <div class="modal-content">
+            <i class="fas fa-check-circle success-icon"></i>
+            <h3>Laporan Berhasil Dikirim!</h3>
+            <p>Terima kasih atas partisipasi Anda dalam menjaga lingkungan.</p>
+            <button class="modal-btn" onclick="closeModal()">OK</button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/ol@10.6.1/dist/ol.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
+
